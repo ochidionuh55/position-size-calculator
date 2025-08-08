@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade2Retire Academy - Professional Position Size Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0ea5e9;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f7ff, #e6f0ff);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.2rem;
+            color: white;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        /* Main Content */
+        .calculator-container {
+            display: flex;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .calculator-form {
+            flex: 1;
+            min-width: 300px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border);
+        }
+        
+        .calculator-form:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .calculator-result {
+            flex: 1;
+            min-width: 300px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border);
+        }
+        
+        .calculator-result:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .section-title {
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.4rem;
+            font-weight: 600;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .input-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+        
+        .input-group input, 
+        .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+            color: var(--text-dark);
+        }
+        
+        .input-group input:focus, 
+        .input-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .price-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .risk-group {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .risk-option {
+            flex: 1;
+            text-align: center;
+            padding: 18px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            background: white;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        
+        .risk-option:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .risk-option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+        
+        .risk-option.selected .risk-percent {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .risk-option i {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .risk-percent {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .risk-label {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .risk-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .btn-calculate {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(37, 99, 235, 0.2);
+            background: linear-gradient(120deg, var(--primary-dark), var(--primary));
+        }
+        
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+        
+        /* Result Styles */
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .result-value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 20px 0;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .result-label {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+        
+        .result-detail {
+            display: flex;
+            justify-content: space-between;
+            background: var(--light-bg);
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin: 12px 0;
+            text-align: left;
+            font-size: 0.95rem;
+            border: 1px solid var(--border);
+        }
+        
+        .result-detail .label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .result-detail .value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .pip-display {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+            gap: 15px;
+        }
+        
+        .pip-box {
+            flex: 1;
+            background: var(--light-bg);
+            padding: 18px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .pip-value {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+        
+        .profit-display {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+            gap: 15px;
+        }
+        
+        .profit-box {
+            flex: 1;
+            padding: 18px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .risk-box {
+            background: linear-gradient(120deg, #fff5f5, #fff);
+            border: 1px solid #fee2e2;
+        }
+        
+        .gain-box {
+            background: linear-gradient(120deg, #f0fdf4, #fff);
+            border: 1px solid #dcfce7;
+        }
+        
+        .profit-label {
+            font-weight: 500;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        .risk-amount {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--danger);
+        }
+        
+        .profit-amount {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--success);
+        }
+        
+        .risk-indicator {
+            margin: 30px 0 15px;
+            padding: 0 10px;
+        }
+        
+        .risk-meter {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .risk-level {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            color: var(--text-light);
+        }
+        
+        /* Warning Styles */
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: pulseWarning 1.5s infinite;
+        }
+        
+        .warning-box i {
+            color: #f59e0b;
+            font-size: 1.5rem;
+            margin-top: 2px;
+        }
+        
+        .warning-content h4 {
+            color: #b45309;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .warning-content p {
+            color: #b45309;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        @keyframes pulseWarning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .risk-detail {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+        
+        .risk-detail p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+        
+        .risk-detail strong {
+            color: var(--danger);
+        }
+        
+        .instructions {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            margin: 40px 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .instructions h2 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions h2 i {
+            color: var(--primary);
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .instructions li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .instructions li:nth-child(1)::before { content: '1'; }
+        .instructions li:nth-child(2)::before { content: '2'; }
+        .instructions li:nth-child(3)::before { content: '3'; }
+        .instructions li:nth-child(4)::before { content: '4'; }
+        .instructions li:nth-child(5)::before { content: '5'; }
+        .instructions li:nth-child(6)::before { content: '6'; }
+        
+        .instructions p {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            font-style: italic;
+            color: var(--text-light);
+        }
+        
+        .instructions p strong {
+            color: var(--text-dark);
+        }
+        
+        .market-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .market-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .market-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .market-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            background: rgba(37, 99, 235, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .market-card h3 {
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .market-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .rr-ratio {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .rr-good {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .rr-fair {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .rr-poor {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        footer {
+            background: var(--card-bg);
+            color: var(--text-light);
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+        
+        footer p:first-child {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .price-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .pip-display, .profit-display {
+                flex-direction: column;
+            }
+            
+            .instructions ol {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* New styles for risk percentage */
+        .risk-percentage-box {
+            background: #f0f9ff;
+            border: 1px solid #e0f2fe;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .risk-percentage-label {
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .risk-percentage-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .risk-percentage-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .risk-percentage-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="logo-text">
+                        <h1>Trade2Retire Academy</h1>
+                        <p>Professional Trading Tools</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="calculator-container">
+            <div class="calculator-form">
+                <h2 class="section-title"><i class="fas fa-calculator"></i> Position Size Calculator</h2>
+                <div class="input-group">
+                    <label for="capital"><i class="fas fa-wallet"></i> Account Capital (USD)</label>
+                    <input type="number" id="capital" placeholder="Enter your account balance" min="1" value="100">
+                </div>
+                
+                <div class="input-group">
+                    <label for="instrument"><i class="fas fa-chart-bar"></i> Instrument Type</label>
+                    <select id="instrument">
+                        <option value="forex">Forex Pair (e.g. EUR/USD)</option>
+                        <option value="stock">Stock (e.g. AAPL)</option>
+                        <option value="index">Index (e.g. S&P 500)</option>
+                        <option value="crypto">Cryptocurrency (e.g. BTC/USD)</option>
+                        <option value="commodity">Commodity (e.g. Gold)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="pair"><i class="fas fa-globe"></i> Instrument Name</label>
+                    <input type="text" id="pair" placeholder="Enter trading pair (e.g. EUR/USD)" value="EUR/CAD">
+                </div>
+                
+                <div class="price-inputs">
+                    <div class="input-group">
+                        <label for="entryPrice"><i class="fas fa-arrow-up-right"></i> Entry Price</label>
+                        <input type="number" id="entryPrice" placeholder="Entry price" min="0.0001" step="0.0001" value="1.60113">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="stopLossPrice"><i class="fas fa-shield-alt"></i> Stop Loss Price</label>
+                        <input type="number" id="stopLossPrice" placeholder="SL price" min="0.0001" step="0.0001" value="1.60267">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="takeProfitPrice"><i class="fas fa-bullseye"></i> Take Profit Price</label>
+                        <input type="number" id="takeProfitPrice" placeholder="TP price" min="0.0001" step="0.0001" value="1.59214">
+                    </div>
+                </div>
+                
+                <h3 style="margin: 25px 0 15px; color: var(--text-dark);">Risk Management</h3>
+                <div class="risk-group">
+                    <div class="risk-option selected" data-risk="1">
+                        <i class="fas fa-shield-alt"></i>
+                        <div class="risk-percent">1%</div>
+                        <div class="risk-label">Conservative</div>
+                        <div class="risk-desc">Low Risk</div>
+                    </div>
+                    <div class="risk-option" data-risk="2">
+                        <i class="fas fa-bolt"></i>
+                        <div class="risk-percent">2%</div>
+                        <div class="risk-label">Moderate</div>
+                        <div class="risk-desc">Balanced</div>
+                    </div>
+                </div>
+                
+                <button class="btn-calculate" id="calculateBtn">
+                    <i class="fas fa-calculator"></i> Calculate Position Size
+                </button>
+            </div>
+            
+            <div class="calculator-result">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> Trade Results</h2>
+                <div class="result-card">
+                    <div class="result-label">Recommended Position Size</div>
+                    <div class="result-value" id="positionSize">0.01</div>
+                    <div class="result-label" id="positionLabel">Standard Lots</div>
+                    
+                    <div class="pip-display">
+                        <div class="pip-box">
+                            <div class="result-label">Risk in Pips</div>
+                            <div class="pip-value" id="riskPips">15.4</div>
+                        </div>
+                        <div class="pip-box">
+                            <div class="result-label">Reward in Pips</div>
+                            <div class="pip-value" id="rewardPips">90</div>
+                        </div>
+                    </div>
+                    
+                    <div class="profit-display">
+                        <div class="profit-box risk-box">
+                            <div class="profit-label">Risk Amount (USD)</div>
+                            <div class="risk-amount" id="riskAmount">$1.54</div>
+                        </div>
+                        <div class="profit-box gain-box">
+                            <div class="profit-label">Profit Potential (USD)</div>
+                            <div class="profit-amount" id="profitAmount">$9.00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-percentage-box">
+                        <div class="risk-percentage-label">Account Risk Percentage</div>
+                        <div class="risk-percentage-value" id="riskPercentage">1.54%</div>
+                        <div class="risk-percentage-bar">
+                            <div class="risk-percentage-fill" id="riskPercentageFill" style="width: 1.54%;"></div>
+                        </div>
+                        <div class="risk-percentage-label">Selected Risk: <span id="selectedRiskValue">1%</span></div>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <div class="label">Risk/Reward Ratio:</div>
+                        <div class="value rr-good" id="rrRatio">1:5.8</div>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <div class="label">Position Value:</div>
+                        <div class="value" id="positionValue">$1,601.13</div>
+                    </div>
+                    
+                    <div class="risk-indicator">
+                        <div class="result-label">Risk Exposure</div>
+                        <div class="risk-meter">
+                            <div class="risk-level" id="riskLevel" style="width: 1.54%; background: var(--warning);"></div>
+                        </div>
+                        <div class="risk-labels">
+                            <span>Low</span>
+                            <span>Medium</span>
+                            <span>High</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Risk Detail -->
+                    <div class="risk-detail">
+                        <p><i class="fas fa-info-circle"></i> <strong>Risk Analysis:</strong> This trade risks <strong id="riskPercentValue">1.54%</strong> of your account ($<strong id="riskAmountValue">1.54</strong>).</p>
+                        <p>Each pip risks $<strong id="pipRiskValue">0.10</strong> and earns $<strong id="pipProfitValue">0.10</strong> if price moves in your favor.</p>
+                    </div>
+                    
+                    <!-- Warning Box -->
+                    <div class="warning-box" id="warningBox">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="warning-content">
+                            <h4>Risk Warning</h4>
+                            <p id="warningText">Your position would risk 1.54% of your account, exceeding your selected 1% risk level.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2><i class="fas fa-graduation-cap"></i> How to Use This Calculator</h2>
+            <ol>
+                <li><strong>Enter your account capital</strong> in USD. This is your total trading balance.</li>
+                <li><strong>Select the instrument type</strong> (Forex, Stock, Index, etc.) you want to trade.</li>
+                <li><strong>Enter the specific instrument</strong> you're trading (e.g. EUR/USD for Forex, AAPL for stocks).</li>
+                <li><strong>Provide Entry Price, Stop Loss Price, and Take Profit Price</strong> for your trade.</li>
+                <li><strong>Choose your risk tolerance</strong> (1% for conservative, 2% for moderate).</li>
+                <li><strong>Click Calculate</strong> to see the optimal position size and risk metrics.</li>
+            </ol>
+            <p><strong>Key Features:</strong> Automatically calculates pips risked, reward potential, risk/reward ratio, and position size while ensuring you never risk more than 1-2% of your capital. Warning system alerts you when risk exceeds your selected level.</p>
+        </div>
+        
+        <div class="market-info">
+            <div class="market-card">
+                <i class="fas fa-globe-europe"></i>
+                <h3>Forex Trading</h3>
+                <p>Standard lot = 100,000 units<br>1 pip = 0.0001 for most pairs</p>
+                <div class="rr-ratio rr-good">Risk/Reward: 1:2</div>
+            </div>
+            
+            <div class="market-card">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Stock Trading</h3>
+                <p>Position size in shares<br>Risk calculated in dollars per share</p>
+                <div class="rr-ratio rr-fair">Risk/Reward: 1:1.5</div>
+            </div>
+            
+            <div class="market-card">
+                <i class="fas fa-balance-scale"></i>
+                <h3>Index Trading</h3>
+                <p>Position size in contracts<br>Risk calculated in index points</p>
+                <div class="rr-ratio rr-poor">Risk/Reward: 1:1</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2023 Trade2Retire Academy | Professional Trading Tools</p>
+            <p>This calculator works offline - no data leaves your computer</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Risk selection
+            const riskOptions = document.querySelectorAll('.risk-option');
+            let selectedRisk = 1;
+            const warningBox = document.getElementById('warningBox');
+            
+            // Hide warning initially
+            warningBox.style.display = 'none';
+            
+            riskOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    riskOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedRisk = parseInt(this.getAttribute('data-risk'));
+                    document.getElementById('selectedRiskValue').textContent = selectedRisk + '%';
+                    calculatePosition();
+                    
+                    // Add animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 300);
+                });
+            });
+            
+            // Calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            calculateBtn.addEventListener('click', calculatePosition);
+            
+            // Initial calculation
+            calculatePosition();
+            
+            function calculatePosition() {
+                // Get input values
+                const capital = parseFloat(document.getElementById('capital').value) || 100;
+                const instrument = document.getElementById('instrument').value;
+                const pair = document.getElementById('pair').value || "EUR/CAD";
+                const entryPrice = parseFloat(document.getElementById('entryPrice').value) || 1.60113;
+                const stopLossPrice = parseFloat(document.getElementById('stopLossPrice').value) || 1.60267;
+                const takeProfitPrice = parseFloat(document.getElementById('takeProfitPrice').value) || 1.59214;
+                
+                // Calculate price differences
+                const priceDiffRisk = Math.abs(entryPrice - stopLossPrice);
+                const priceDiffReward = Math.abs(takeProfitPrice - entryPrice);
+                
+                // Calculate pips/points risked and rewarded
+                let riskPips, rewardPips;
+                
+                if (instrument === 'forex' || instrument === 'crypto') {
+                    // For forex and crypto, calculate pips
+                    riskPips = priceDiffRisk * 10000;
+                    rewardPips = priceDiffReward * 10000;
+                } else {
+                    // For stocks and indices, calculate points
+                    riskPips = priceDiffRisk;
+                    rewardPips = priceDiffReward;
+                }
+                
+                // Update pip display
+                document.getElementById('riskPips').textContent = riskPips.toFixed(1);
+                document.getElementById('rewardPips').textContent = rewardPips.toFixed(1);
+                
+                // Calculate risk/reward ratio
+                const rrRatio = (rewardPips / riskPips).toFixed(1);
+                document.getElementById('rrRatio').textContent = `1:${rrRatio}`;
+                
+                // Update RR ratio styling
+                const rrElement = document.getElementById('rrRatio');
+                rrElement.className = 'value';
+                if (rrRatio >= 2) {
+                    rrElement.classList.add('rr-good');
+                } else if (rrRatio >= 1.5) {
+                    rrElement.classList.add('rr-fair');
+                } else {
+                    rrElement.classList.add('rr-poor');
+                }
+                
+                // Risk amount in dollars (selected risk percentage)
+                const selectedRiskAmount = capital * (selectedRisk / 100);
+                
+                // Calculate position size based on instrument type
+                let positionSize, positionValue, positionLabel;
+                let pipValue = 10; // Default pip value for Forex
+                let multiplier = 1;
+                
+                switch(instrument) {
+                    case 'forex':
+                        // For forex: 1 standard lot = 100,000 units
+                        // Risk per lot = riskPips * $10 (for standard lot)
+                        multiplier = 100000;
+                        positionSize = selectedRiskAmount / (riskPips * pipValue);
+                        positionValue = positionSize * multiplier * entryPrice;
+                        positionLabel = "Standard Lots";
+                        pipValue = 10; // $10 per pip per standard lot
+                        break;
+                    
+                    case 'stock':
+                        // For stocks: position size = riskAmount / riskPips (dollars per share)
+                        multiplier = 1;
+                        positionSize = selectedRiskAmount / priceDiffRisk;
+                        positionValue = positionSize * entryPrice;
+                        positionLabel = "Shares";
+                        pipValue = 1; // $1 per point per share
+                        break;
+                        
+                    case 'index':
+                        // For indices: position size = riskAmount / (riskPips * multiplier)
+                        multiplier = 50; // S&P 500 contract multiplier
+                        positionSize = selectedRiskAmount / (priceDiffRisk * multiplier);
+                        positionValue = positionSize * entryPrice * multiplier;
+                        positionLabel = "Contracts";
+                        pipValue = multiplier; // $50 per point per contract
+                        break;
+                        
+                    case 'crypto':
+                        // For crypto: similar to forex but with different pip value
+                        multiplier = 1;
+                        positionSize = selectedRiskAmount / priceDiffRisk;
+                        positionValue = positionSize * entryPrice;
+                        positionLabel = "Units";
+                        pipValue = 1; // $1 per dollar movement
+                        break;
+                        
+                    case 'commodity':
+                        // For commodities: assume gold (1 lot = 100 ounces)
+                        multiplier = 100;
+                        positionSize = selectedRiskAmount / (priceDiffRisk * multiplier);
+                        positionValue = positionSize * multiplier * entryPrice;
+                        positionLabel = "Lots (100 oz)";
+                        pipValue = multiplier; // $100 per point per lot
+                        break;
+                }
+                
+                // Ensure position size is at least 0.01
+                positionSize = Math.max(positionSize, 0.01);
+                
+                // Calculate actual risk amount based on position size
+                const actualRiskAmount = positionSize * riskPips * pipValue;
+                const actualProfitPotential = positionSize * rewardPips * pipValue;
+                
+                // Calculate pip risk and profit values
+                const pipRiskValue = (actualRiskAmount / riskPips).toFixed(2);
+                const pipProfitValue = (actualProfitPotential / rewardPips).toFixed(2);
+                
+                // Calculate risk percentage of account
+                const riskPercentage = (actualRiskAmount / capital * 100).toFixed(2);
+                
+                // Update the UI
+                document.getElementById('positionSize').textContent = positionSize.toFixed(4);
+                document.getElementById('positionLabel').textContent = positionLabel;
+                document.getElementById('riskAmount').textContent = `$${actualRiskAmount.toFixed(2)}`;
+                document.getElementById('profitAmount').textContent = `$${actualProfitPotential.toFixed(2)}`;
+                document.getElementById('positionValue').textContent = `$${positionValue.toFixed(2)}`;
+                
+                // Update risk details
+                document.getElementById('riskPercentValue').textContent = riskPercentage;
+                document.getElementById('riskAmountValue').textContent = actualRiskAmount.toFixed(2);
+                document.getElementById('pipRiskValue').textContent = pipRiskValue;
+                document.getElementById('pipProfitValue').textContent = pipProfitValue;
+                
+                // Update risk percentage display
+                document.getElementById('riskPercentage').textContent = riskPercentage + '%';
+                document.getElementById('riskPercentageFill').style.width = Math.min(riskPercentage, 100) + '%';
+                
+                // Add animation to position size
+                const positionElement = document.getElementById('positionSize');
+                positionElement.style.transform = 'scale(1.1)';
+                positionElement.style.color = 'var(--primary-dark)';
+                setTimeout(() => {
+                    positionElement.style.transform = 'scale(1)';
+                    positionElement.style.color = 'var(--primary)';
+                }, 300);
+                
+                // Add animation to profit amount
+                const profitElement = document.getElementById('profitAmount');
+                profitElement.style.transform = 'scale(1.1)';
+                profitElement.style.color = '#059669';
+                setTimeout(() => {
+                    profitElement.style.transform = 'scale(1)';
+                    profitElement.style.color = 'var(--success)';
+                }, 300);
+                
+                // Update risk meter
+                const riskPercent = (actualRiskAmount / capital) * 100;
+                let riskColor = 'var(--success)';
+                
+                if (riskPercent > selectedRisk && riskPercent <= selectedRisk * 1.5) {
+                    riskColor = 'var(--warning)';
+                } else if (riskPercent > selectedRisk * 1.5) {
+                    riskColor = 'var(--danger)';
+                }
+                
+                document.getElementById('riskLevel').style.width = `${Math.min(riskPercent / 3, 100)}%`;
+                document.getElementById('riskLevel').style.background = riskColor;
+                
+                // Risk validation
+                validateRisk(capital, riskPips, selectedRisk, actualRiskAmount, riskPercentage);
+            }
+            
+            function validateRisk(capital, riskPips, selectedRisk, actualRiskAmount, riskPercentage) {
+                const warningBox = document.getElementById('warningBox');
+                const warningText = document.getElementById('warningText');
+                
+                // Show warning if risk exceeds selected percentage
+                if (riskPercentage > selectedRisk) {
+                    warningBox.style.display = 'flex';
+                    warningText.textContent = `Your position would risk ${riskPercentage}% of your account ($${actualRiskAmount.toFixed(2)}), exceeding your selected ${selectedRisk}% risk level ($${(capital * selectedRisk/100).toFixed(2)}).`;
+                } 
+                // Show warning for very small accounts
+                else if (capital < 200 && riskPips > 15) {
+                    warningBox.style.display = 'flex';
+                    warningText.textContent = `For small accounts (under $200), it's recommended to trade with fewer than 15 pips risk. Your current risk is ${riskPips.toFixed(1)} pips.`;
+                } 
+                // Show warning for very small risk amounts
+                else if (actualRiskAmount < 1) {
+                    warningBox.style.display = 'flex';
+                    warningText.textContent = `Risk amount is very low ($${actualRiskAmount.toFixed(2)}). It may be difficult to execute this trade. Consider a larger account size or a trade with more pips risk.`;
+                } 
+                // Hide warning if no issues
+                else {
+                    warningBox.style.display = 'none';
+                }
+            }
+            
+            // Instrument type change
+            document.getElementById('instrument').addEventListener('change', function() {
+                const instrument = this.value;
+                let examplePair = "";
+                let entry = 1.0850;
+                let sl = 1.0800;
+                let tp = 1.0950;
+                
+                switch(instrument) {
+                    case 'forex': 
+                        examplePair = "EUR/CAD"; 
+                        entry = 1.60113;
+                        sl = 1.60267;
+                        tp = 1.59214;
+                        break;
+                    case 'stock': 
+                        examplePair = "AAPL"; 
+                        entry = 150;
+                        sl = 145;
+                        tp = 160;
+                        break;
+                    case 'index': 
+                        examplePair = "S&P 500"; 
+                        entry = 4500;
+                        sl = 4480;
+                        tp = 4550;
+                        break;
+                    case 'crypto': 
+                        examplePair = "BTC/USD"; 
+                        entry = 30000;
+                        sl = 29500;
+                        tp = 31000;
+                        break;
+                    case 'commodity': 
+                        examplePair = "Gold"; 
+                        entry = 1950;
+                        sl = 1940;
+                        tp = 1970;
+                        break;
+                }
+                
+                document.getElementById('pair').value = examplePair;
+                document.getElementById('entryPrice').value = entry;
+                document.getElementById('stopLossPrice').value = sl;
+                document.getElementById('takeProfitPrice').value = tp;
+                
+                calculatePosition();
+            });
+            
+            // Input changes
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculatePosition);
+            });
+        });
+    </script>
+</body>
+</html>
